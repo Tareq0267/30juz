@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { getTimeUntil } from '../services/prayerService'
+import { getJuzForDay } from '../data/juzSplit'
 
 const PRAYER_ICONS = {
   Fajr: '🌅',
@@ -9,24 +10,32 @@ const PRAYER_ICONS = {
   Isha: '🌙',
 }
 
-export default function HomePage({ prayerData }) {
+export default function HomePage({ prayerData, ramadhanDay, progress }) {
   const { prayers, currentPrayer, loading, error, PRAYER_KEYS, locationSource, selectedState } =
     prayerData
-  const currentDay = 1 // Will be dynamic in Phase 4
+  const { day } = ramadhanDay
+  const { isSegmentComplete, getDayProgress, daysFullyCompleted } = progress
+  const juzInfo = getJuzForDay(day)
+  const dayProgress = getDayProgress(day)
 
   return (
     <div className="space-y-6">
       {/* Welcome Card */}
       <div className="bg-black-forest dark:bg-gray-800 text-cornsilk rounded-2xl p-6 shadow-lg">
         <h1 className="text-2xl font-bold mb-1">Ramadhan Mubarak</h1>
-        <p className="text-cornsilk/70 text-sm">Day {currentDay} of 30 — Juz {currentDay}</p>
+        <p className="text-cornsilk/70 text-sm">
+          Day {day} of 30 — Juz {day}
+        </p>
+        <p className="text-cornsilk/50 text-xs mt-0.5">{juzInfo.label}</p>
         <div className="mt-4 w-full bg-cornsilk/20 rounded-full h-2">
           <div
             className="bg-sunlit-clay h-2 rounded-full transition-all duration-500"
-            style={{ width: `${(currentDay / 30) * 100}%` }}
+            style={{ width: `${(daysFullyCompleted / 30) * 100}%` }}
           />
         </div>
-        <p className="text-xs text-cornsilk/50 mt-1">{currentDay}/30 Juz completed</p>
+        <p className="text-xs text-cornsilk/50 mt-1">
+          {daysFullyCompleted}/30 Juz completed · {dayProgress}/5 today
+        </p>
       </div>
 
       {/* Prayer Times Card */}
@@ -108,42 +117,54 @@ export default function HomePage({ prayerData }) {
         <div className="space-y-2">
           {PRAYER_KEYS.map((prayer, i) => {
             const isCurrent = currentPrayer?.current === prayer
+            const done = isSegmentComplete(day, prayer)
             return (
               <Link
                 key={prayer}
-                to={`/reader/${currentDay}?segment=${i + 1}`}
+                to={`/reader/${day}?segment=${i + 1}`}
                 className={`flex items-center justify-between rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 border ${
-                  isCurrent
-                    ? 'bg-olive-leaf/5 dark:bg-olive-leaf/10 border-olive-leaf/30 dark:border-olive-leaf/40'
-                    : 'bg-white dark:bg-gray-800 border-olive-leaf/10 dark:border-gray-700'
+                  done
+                    ? 'bg-olive-leaf/5 dark:bg-olive-leaf/10 border-olive-leaf/20 dark:border-olive-leaf/30'
+                    : isCurrent
+                      ? 'bg-sunlit-clay/5 dark:bg-sunlit-clay/5 border-sunlit-clay/30 dark:border-sunlit-clay/20'
+                      : 'bg-white dark:bg-gray-800 border-olive-leaf/10 dark:border-gray-700'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <span
                     className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
-                      isCurrent
+                      done
                         ? 'bg-olive-leaf text-cornsilk'
-                        : 'bg-olive-leaf/10 dark:bg-olive-leaf/20'
+                        : isCurrent
+                          ? 'bg-sunlit-clay/20 dark:bg-sunlit-clay/10'
+                          : 'bg-olive-leaf/10 dark:bg-olive-leaf/20'
                     }`}
                   >
-                    {PRAYER_ICONS[prayer]}
+                    {done ? '✓' : PRAYER_ICONS[prayer]}
                   </span>
                   <div>
                     <p className="font-medium text-black-forest dark:text-cornsilk">
                       {prayer}
-                      {isCurrent && (
-                        <span className="ml-2 text-xs text-olive-leaf dark:text-sunlit-clay font-normal">
+                      {isCurrent && !done && (
+                        <span className="ml-2 text-xs text-sunlit-clay font-normal">
                           Now
+                        </span>
+                      )}
+                      {done && (
+                        <span className="ml-2 text-xs text-olive-leaf dark:text-olive-leaf/80 font-normal">
+                          Done
                         </span>
                       )}
                     </p>
                     <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-                      Segment {i + 1} of Juz {currentDay}
+                      Segment {i + 1} of Juz {day}
                       {prayers ? ` · ${prayers[prayer]}` : ''}
                     </p>
                   </div>
                 </div>
-                <span className="text-copperwood text-sm">Start →</span>
+                <span className={`text-sm ${done ? 'text-olive-leaf' : 'text-copperwood'}`}>
+                  {done ? 'Review →' : 'Start →'}
+                </span>
               </Link>
             )
           })}

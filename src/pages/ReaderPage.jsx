@@ -7,8 +7,10 @@ import AyahCard from '../components/AyahCard'
 import FontSizeSlider from '../components/FontSizeSlider'
 import SegmentTabs from '../components/SegmentTabs'
 import LoadingSkeleton from '../components/LoadingSkeleton'
+import { PRAYER_SEGMENTS } from '../data/juzSplit'
 
-export default function ReaderPage() {
+export default function ReaderPage({ progress }) {
+  const { markSegmentComplete, isSegmentComplete } = progress
   const { juz } = useParams()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -114,6 +116,9 @@ export default function ReaderPage() {
             activeSegment={activeSegment}
             onChangeSegment={setActiveSegment}
             segmentCount={segments.length}
+            completedSegments={new Set(
+              PRAYER_SEGMENTS.filter((s) => isSegmentComplete(juzNumber, s.prayer)).map((s) => s.prayer)
+            )}
           />
           <FontSizeSlider
             fontSize={fontSize}
@@ -154,30 +159,53 @@ export default function ReaderPage() {
             />
           ))}
 
-          {/* Next segment / Juz nav */}
-          {currentAyahs.length > 0 && (
-            <div className="flex gap-2 pt-4 pb-8">
-              {activeSegment < segments.length - 1 ? (
-                <button
-                  onClick={() => setActiveSegment((s) => s + 1)}
-                  className="flex-1 bg-olive-leaf text-cornsilk py-3 rounded-2xl font-medium text-sm hover:bg-olive-leaf/90 transition-colors shadow-sm"
-                >
-                  Next Segment →
-                </button>
-              ) : juzNumber < 30 ? (
-                <button
-                  onClick={() => navigate(`/reader/${juzNumber + 1}?segment=1`)}
-                  className="flex-1 bg-sunlit-clay text-black-forest py-3 rounded-2xl font-medium text-sm hover:bg-sunlit-clay/90 transition-colors shadow-sm"
-                >
-                  Next Juz →
-                </button>
-              ) : (
-                <div className="flex-1 bg-olive-leaf/10 dark:bg-olive-leaf/20 text-olive-leaf py-3 rounded-2xl font-medium text-sm text-center">
-                  End of Quran — Alhamdulillah
+          {/* Mark complete + navigation */}
+          {currentAyahs.length > 0 && (() => {
+            const prayerName = PRAYER_SEGMENTS[activeSegment]?.prayer
+            const done = prayerName && isSegmentComplete(juzNumber, prayerName)
+
+            return (
+              <div className="space-y-2 pt-4 pb-8">
+                {/* Mark segment complete */}
+                {prayerName && (
+                  <button
+                    onClick={() => markSegmentComplete(juzNumber, prayerName)}
+                    disabled={done}
+                    className={`w-full py-3 rounded-2xl font-medium text-sm transition-colors shadow-sm ${
+                      done
+                        ? 'bg-olive-leaf/10 dark:bg-olive-leaf/20 text-olive-leaf cursor-default'
+                        : 'bg-olive-leaf text-cornsilk hover:bg-olive-leaf/90'
+                    }`}
+                  >
+                    {done ? '✓ Segment Complete' : 'Mark as Complete'}
+                  </button>
+                )}
+
+                {/* Next navigation */}
+                <div className="flex gap-2">
+                  {activeSegment < segments.length - 1 ? (
+                    <button
+                      onClick={() => setActiveSegment((s) => s + 1)}
+                      className="flex-1 bg-sunlit-clay/15 dark:bg-sunlit-clay/10 text-copperwood py-3 rounded-2xl font-medium text-sm hover:bg-sunlit-clay/25 transition-colors"
+                    >
+                      Next Segment →
+                    </button>
+                  ) : juzNumber < 30 ? (
+                    <button
+                      onClick={() => navigate(`/reader/${juzNumber + 1}?segment=1`)}
+                      className="flex-1 bg-sunlit-clay text-black-forest py-3 rounded-2xl font-medium text-sm hover:bg-sunlit-clay/90 transition-colors shadow-sm"
+                    >
+                      Next Juz →
+                    </button>
+                  ) : (
+                    <div className="flex-1 bg-olive-leaf/10 dark:bg-olive-leaf/20 text-olive-leaf py-3 rounded-2xl font-medium text-sm text-center">
+                      End of Quran — Alhamdulillah
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )
+          })()}
         </div>
       )}
     </div>

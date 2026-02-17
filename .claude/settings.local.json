@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm create:*)",
       "Bash(python3:*)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "WebFetch(domain:api.alquran.cloud)"
     ]
   }
 }

@@ -2,8 +2,9 @@ import { MALAYSIA_STATES } from '../data/malaysiaStates'
 import { useFontSize } from '../hooks/useFontSize'
 import FontSizeSlider from '../components/FontSizeSlider'
 
-export default function SettingsPage({ prayerData }) {
+export default function SettingsPage({ prayerData, ramadhanDay }) {
   const { selectedState, locationSource, changeState, retryGPS, loading } = prayerData
+  const { day, isManual, setManualDay, resetToAuto } = ramadhanDay
   const { fontSize, setFontSize, MIN_SIZE, MAX_SIZE } = useFontSize()
 
   return (
@@ -11,6 +12,65 @@ export default function SettingsPage({ prayerData }) {
       <h1 className="text-xl font-bold text-black-forest dark:text-cornsilk">Settings</h1>
 
       <div className="space-y-3">
+        {/* Ramadhan Day Selector */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
+          <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-1">
+            Ramadhan Day
+          </label>
+          <p className="text-xs text-black-forest/50 dark:text-cornsilk/50 mb-3">
+            {isManual
+              ? `Manually set to Day ${day}`
+              : `Auto-calculated: Day ${day} (from 19 Feb 2026)`}
+          </p>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setManualDay(Math.max(1, day - 1))}
+              disabled={day <= 1}
+              className="w-10 h-10 rounded-xl bg-cornsilk dark:bg-gray-700 border border-olive-leaf/10 dark:border-gray-600 text-black-forest dark:text-cornsilk font-bold disabled:opacity-30 hover:border-olive-leaf/30 transition-colors"
+            >
+              −
+            </button>
+            <div className="flex-1 text-center">
+              <span className="text-3xl font-bold text-black-forest dark:text-cornsilk">{day}</span>
+              <span className="text-sm text-black-forest/40 dark:text-cornsilk/40"> / 30</span>
+            </div>
+            <button
+              onClick={() => setManualDay(Math.min(30, day + 1))}
+              disabled={day >= 30}
+              className="w-10 h-10 rounded-xl bg-cornsilk dark:bg-gray-700 border border-olive-leaf/10 dark:border-gray-600 text-black-forest dark:text-cornsilk font-bold disabled:opacity-30 hover:border-olive-leaf/30 transition-colors"
+            >
+              +
+            </button>
+          </div>
+
+          {/* Quick select grid */}
+          <div className="grid grid-cols-10 gap-1 mt-3">
+            {Array.from({ length: 30 }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setManualDay(i + 1)}
+                className={`aspect-square rounded-lg text-[10px] font-medium transition-all ${
+                  day === i + 1
+                    ? 'bg-olive-leaf text-cornsilk'
+                    : 'bg-cornsilk dark:bg-gray-700 text-black-forest/60 dark:text-cornsilk/60 hover:bg-olive-leaf/10'
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          {isManual && (
+            <button
+              onClick={resetToAuto}
+              className="mt-2 w-full text-xs text-olive-leaf dark:text-sunlit-clay py-2 rounded-xl hover:bg-olive-leaf/5 dark:hover:bg-sunlit-clay/10 transition-colors"
+            >
+              Reset to auto-detect
+            </button>
+          )}
+        </div>
+
         {/* Location */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
           <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-1">
@@ -47,16 +107,6 @@ export default function SettingsPage({ prayerData }) {
           >
             {loading ? 'Detecting...' : 'Use GPS instead'}
           </button>
-        </div>
-
-        {/* Ramadhan Day Selector */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
-          <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-2">
-            Ramadhan Day
-          </label>
-          <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-            Manual day selector coming in Phase 4.
-          </p>
         </div>
 
         {/* Font Size */}
