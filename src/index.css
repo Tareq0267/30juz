@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-olive-leaf: #606c38;
+  --color-black-forest: #283618;
+  --color-cornsilk: #fefae0;
+  --color-sunlit-clay: #dda15e;
+  --color-copperwood: #bc6c25;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Base styles */
+html {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  @apply bg-cornsilk text-black-forest transition-colors duration-300;
+}
+
+.dark body {
+  @apply bg-gray-900 text-cornsilk;
+}
+
+/* Uthmanic Arabic font */
+@font-face {
+  font-family: 'KFGQPC Uthmanic Script';
+  src: url('https://cdn.jsdelivr.net/gh/nicedoc/arabic-fonts@main/fonts/KFGQPC%20Uthmanic%20Script%20HAFS/UthmanicHafs1Ver18.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-uthmani {
+  font-family: 'KFGQPC Uthmanic Script', 'Traditional Arabic', 'Amiri', serif;
+  direction: rtl;
+  line-height: 2.2;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-sunlit-clay/40 rounded-full;
+}

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(python3:*)",
+      "Bash(npx vite:*)"
+    ]
+  }
+}
