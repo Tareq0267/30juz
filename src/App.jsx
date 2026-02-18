@@ -26,8 +26,8 @@ export default function App() {
     <Layout dark={dark} onToggleDark={toggle}>
       <Routes>
         <Route path="/" element={<HomePage prayerData={prayerData} ramadhanDay={ramadhanDay} progress={progress} />} />
-        <Route path="/reader" element={<ReaderPage progress={progress} />} />
-        <Route path="/reader/:juz" element={<ReaderPage progress={progress} />} />
+        <Route path="/reader" element={<ReaderPage progress={progress} ramadhanDay={ramadhanDay} />} />
+        <Route path="/reader/:juz" element={<ReaderPage progress={progress} ramadhanDay={ramadhanDay} />} />
         <Route path="/progress" element={<ProgressPage ramadhanDay={ramadhanDay} progress={progress} />} />
         <Route path="/settings" element={<SettingsPage prayerData={prayerData} ramadhanDay={ramadhanDay} notifications={notifications} />} />
       </Routes>

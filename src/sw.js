@@ -55,7 +55,9 @@ registerRoute(
 
 // Font CDN — cache first (fonts don't change)
 registerRoute(
-  ({ url }) => url.origin === 'https://fonts.cdnfonts.com',
+  ({ url }) =>
+    url.origin === 'https://fonts.googleapis.com' ||
+    url.origin === 'https://fonts.gstatic.com',
   new CacheFirst({
     cacheName: 'font-cache',
     plugins: [
@@ -73,11 +75,11 @@ let notifiedPrayers = {}
 let lastCheckedDate = null
 
 const PRAYER_LABELS = {
-  Fajr: { emoji: '🌅', message: 'Time for Fajr. Start your Quran reading.' },
-  Dhuhr: { emoji: '☀️', message: 'Dhuhr time. Continue your Juz reading.' },
-  Asr: { emoji: '🌤️', message: 'Asr time. Keep up with your reading.' },
-  Maghrib: { emoji: '🌇', message: 'Maghrib time. Continue your Juz reading.' },
-  Isha: { emoji: '🌙', message: "Isha time. Complete today's reading." },
+  Fajr: { emoji: '🌅', name: 'Subuh', message: 'Waktu Subuh. Mulakan bacaan Al-Quran anda.' },
+  Dhuhr: { emoji: '☀️', name: 'Zohor', message: 'Waktu Zohor. Teruskan bacaan Juz anda.' },
+  Asr: { emoji: '🌤️', name: 'Asar', message: 'Waktu Asar. Teruskan bacaan anda.' },
+  Maghrib: { emoji: '🌇', name: 'Maghrib', message: 'Waktu Maghrib. Teruskan bacaan Juz anda.' },
+  Isha: { emoji: '🌙', name: 'Isyak', message: 'Waktu Isyak. Lengkapkan bacaan hari ini.' },
 }
 
 function parseToMinutes(timeStr) {
@@ -120,7 +122,7 @@ function checkAndNotify() {
       const segmentIndex = prayerKeys.indexOf(prayer) + 1
 
       self.registration.showNotification(
-        `${info.emoji} ${prayer} Time`,
+        `${info.emoji} Waktu ${info.name}`,
         {
           body: `${info.message} Juz ${dayNumber}, Segment ${segmentIndex}.`,
           icon: '/icons/icon-192.png',

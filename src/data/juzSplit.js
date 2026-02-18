@@ -35,13 +35,22 @@ export const JUZ_DATA = [
   { juz: 30, startSurah: 78, startAyah: 1,    endSurah: 114, endAyah: 6,   label: 'An-Naba → An-Nas' },
 ]
 
+// API key → Bahasa Malaysia display name
+export const PRAYER_DISPLAY = {
+  Fajr: 'Subuh',
+  Dhuhr: 'Zohor',
+  Asr: 'Asar',
+  Maghrib: 'Maghrib',
+  Isha: 'Isyak',
+}
+
 // Prayer-to-segment mapping (deterministic)
 export const PRAYER_SEGMENTS = [
-  { index: 0, prayer: 'Fajr',    label: 'Fajr — Segment 1' },
-  { index: 1, prayer: 'Dhuhr',   label: 'Dhuhr — Segment 2' },
-  { index: 2, prayer: 'Asr',     label: 'Asr — Segment 3' },
+  { index: 0, prayer: 'Fajr',    label: 'Subuh — Segment 1' },
+  { index: 1, prayer: 'Dhuhr',   label: 'Zohor — Segment 2' },
+  { index: 2, prayer: 'Asr',     label: 'Asar — Segment 3' },
   { index: 3, prayer: 'Maghrib', label: 'Maghrib — Segment 4' },
-  { index: 4, prayer: 'Isha',    label: 'Isha — Segment 5' },
+  { index: 4, prayer: 'Isha',    label: 'Isyak — Segment 5' },
 ]
 
 // Ramadhan day = Juz number. Day 1 → Juz 1, Day 30 → Juz 30.

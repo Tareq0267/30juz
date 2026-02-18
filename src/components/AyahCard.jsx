@@ -4,6 +4,8 @@ export default function AyahCard({
   isHighlighted,
   onToggleHighlight,
   showSurahHeader,
+  showEnglish = true,
+  showMalay = true,
 }) {
   return (
     <>
@@ -44,14 +46,18 @@ export default function AyahCard({
         </p>
 
         {/* English translation */}
-        <p className="text-sm text-black-forest/70 dark:text-cornsilk/70 mb-2 leading-relaxed">
-          {ayah.english}
-        </p>
+        {showEnglish && (
+          <p className="text-sm text-black-forest/70 dark:text-cornsilk/70 mb-2 leading-relaxed">
+            {ayah.english}
+          </p>
+        )}
 
         {/* Malay translation */}
-        <p className="text-sm text-olive-leaf dark:text-olive-leaf/80 leading-relaxed italic">
-          {ayah.malay}
-        </p>
+        {showMalay && (
+          <p className="text-sm text-olive-leaf dark:text-olive-leaf/80 leading-relaxed italic">
+            {ayah.malay}
+          </p>
+        )}
       </button>
     </>
   )

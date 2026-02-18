@@ -3,13 +3,14 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom'
 import { useQuranData } from '../hooks/useQuranData'
 import { useHighlights } from '../hooks/useHighlights'
 import { useFontSize } from '../hooks/useFontSize'
+import { useTranslationToggle } from '../hooks/useTranslationToggle'
 import AyahCard from '../components/AyahCard'
 import FontSizeSlider from '../components/FontSizeSlider'
 import SegmentTabs from '../components/SegmentTabs'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import { PRAYER_SEGMENTS } from '../data/juzSplit'
 
-export default function ReaderPage({ progress }) {
+export default function ReaderPage({ progress, ramadhanDay }) {
   const { markSegmentComplete, isSegmentComplete } = progress
   const { juz } = useParams()
   const [searchParams] = useSearchParams()
@@ -20,6 +21,7 @@ export default function ReaderPage({ progress }) {
   const { segments, loading, error, reload } = useQuranData(juzNumber)
   const { isHighlighted, toggleHighlight } = useHighlights()
   const { fontSize, setFontSize, MIN_SIZE, MAX_SIZE } = useFontSize()
+  const { showMalay, setShowMalay, showEnglish, setShowEnglish } = useTranslationToggle()
 
   const [activeSegment, setActiveSegment] = useState(initialSegment)
   const [showControls, setShowControls] = useState(true)
@@ -47,21 +49,63 @@ export default function ReaderPage({ progress }) {
   }
 
   if (!juz) {
+    const todayJuz = ramadhanDay?.day || 1
     return (
       <div className="space-y-6">
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-olive-leaf/10 dark:border-gray-700 text-center">
           <p className="font-uthmani text-3xl text-black-forest dark:text-cornsilk mb-4">
             بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
           </p>
-          <p className="text-sm text-black-forest/60 dark:text-cornsilk/60 mb-4">
-            Select a Juz from the home page to begin reading.
-          </p>
           <button
-            onClick={() => navigate('/')}
-            className="bg-olive-leaf text-cornsilk px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-olive-leaf/90 transition-colors"
+            onClick={() => navigate(`/reader/${todayJuz}?segment=1`)}
+            className="bg-olive-leaf text-cornsilk px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-olive-leaf/90 transition-colors w-full"
           >
-            Go to Home
+            Continue Today's Juz — Juz {todayJuz}
           </button>
+        </div>
+
+        <div>
+          <h2 className="text-sm font-semibold text-black-forest dark:text-cornsilk mb-3">
+            All 30 Juz
+          </h2>
+          <div className="grid grid-cols-5 gap-2">
+            {Array.from({ length: 30 }, (_, i) => {
+              const n = i + 1
+              const dayProgress = progress.getDayProgress(n)
+              const isToday = n === todayJuz
+              const isComplete = dayProgress === 5
+              return (
+                <button
+                  key={n}
+                  onClick={() => navigate(`/reader/${n}?segment=1`)}
+                  className={`relative py-3 rounded-xl text-sm font-medium transition-all ${
+                    isToday
+                      ? 'bg-sunlit-clay text-black-forest shadow-md ring-2 ring-sunlit-clay/50'
+                      : isComplete
+                        ? 'bg-olive-leaf/15 dark:bg-olive-leaf/20 text-olive-leaf'
+                        : 'bg-cornsilk dark:bg-gray-700 text-black-forest/70 dark:text-cornsilk/70 hover:bg-sunlit-clay/10'
+                  }`}
+                >
+                  {n}
+                  {isComplete && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-olive-leaf text-cornsilk rounded-full text-[9px] flex items-center justify-center">
+                      ✓
+                    </span>
+                  )}
+                  {dayProgress > 0 && !isComplete && (
+                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+                      {Array.from({ length: dayProgress }, (_, j) => (
+                        <span key={j} className="w-1 h-1 rounded-full bg-sunlit-clay" />
+                      ))}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+          <p className="text-[10px] text-black-forest/40 dark:text-cornsilk/40 mt-2 text-center">
+            Dots = segments completed · ✓ = all 5 segments done
+          </p>
         </div>
       </div>
     )
@@ -77,7 +121,7 @@ export default function ReaderPage({ progress }) {
           </h1>
           {currentAyahs.length > 0 && (
             <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-              {currentAyahs.length} ayahs in this segment
+              {currentAyahs.length} ayat in this segment
             </p>
           )}
         </div>
@@ -126,6 +170,28 @@ export default function ReaderPage({ progress }) {
             min={MIN_SIZE}
             max={MAX_SIZE}
           />
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowEnglish((v) => !v)}
+              className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all border ${
+                showEnglish
+                  ? 'bg-olive-leaf/10 dark:bg-olive-leaf/20 border-olive-leaf/30 text-olive-leaf'
+                  : 'bg-white dark:bg-gray-800 border-olive-leaf/10 dark:border-gray-700 text-black-forest/40 dark:text-cornsilk/40'
+              }`}
+            >
+              {showEnglish ? '✓ ' : ''}English
+            </button>
+            <button
+              onClick={() => setShowMalay((v) => !v)}
+              className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all border ${
+                showMalay
+                  ? 'bg-olive-leaf/10 dark:bg-olive-leaf/20 border-olive-leaf/30 text-olive-leaf'
+                  : 'bg-white dark:bg-gray-800 border-olive-leaf/10 dark:border-gray-700 text-black-forest/40 dark:text-cornsilk/40'
+              }`}
+            >
+              {showMalay ? '✓ ' : ''}Melayu
+            </button>
+          </div>
         </div>
       )}
 
@@ -156,6 +222,8 @@ export default function ReaderPage({ progress }) {
               isHighlighted={isHighlighted(ayah.number)}
               onToggleHighlight={toggleHighlight}
               showSurahHeader={shouldShowSurahHeader(ayah, i)}
+              showEnglish={showEnglish}
+              showMalay={showMalay}
             />
           ))}
 

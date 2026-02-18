@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { getTimeUntil } from '../services/prayerService'
-import { getJuzForDay } from '../data/juzSplit'
+import { getJuzForDay, PRAYER_DISPLAY } from '../data/juzSplit'
 
 const PRAYER_ICONS = {
   Fajr: '🌅',
@@ -42,7 +42,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-black-forest dark:text-cornsilk">
-            Prayer Times
+            Waktu Solat
           </h2>
           <span className="text-xs text-black-forest/40 dark:text-cornsilk/40">
             {locationSource === 'gps'
@@ -88,7 +88,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
                 >
                   <span className="block text-sm">{PRAYER_ICONS[key]}</span>
                   <span className="block text-[10px] font-medium text-black-forest/70 dark:text-cornsilk/70 mt-0.5">
-                    {key}
+                    {PRAYER_DISPLAY[key]}
                   </span>
                   <span
                     className={`block text-xs font-bold mt-0.5 ${
@@ -144,7 +144,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
                   </span>
                   <div>
                     <p className="font-medium text-black-forest dark:text-cornsilk">
-                      {prayer}
+                      {PRAYER_DISPLAY[prayer]}
                       {isCurrent && !done && (
                         <span className="ml-2 text-xs text-sunlit-clay font-normal">
                           Now
