@@ -42,7 +42,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-black-forest dark:text-cornsilk">
-            Waktu Solat
+            Solat Time
           </h2>
           <span className="text-xs text-black-forest/40 dark:text-cornsilk/40">
             {locationSource === 'gps'
