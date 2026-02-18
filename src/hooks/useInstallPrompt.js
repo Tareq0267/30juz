@@ -1,14 +1,26 @@
 import { useState, useEffect } from 'react'
 
+// Capture the event early, before React mounts
+let earlyPromptEvent = null
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault()
+  earlyPromptEvent = e
+})
+
 export function useInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [isInstalled, setIsInstalled] = useState(false)
 
   useEffect(() => {
-    // Already installed as PWA
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
       setIsInstalled(true)
       return
+    }
+
+    // Pick up event that fired before React mounted
+    if (earlyPromptEvent) {
+      setDeferredPrompt(earlyPromptEvent)
+      earlyPromptEvent = null
     }
 
     const handler = (e) => {
