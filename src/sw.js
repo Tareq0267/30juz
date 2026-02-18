@@ -1,19 +1,43 @@
-import { precacheAndRoute } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing'
-import { NetworkFirst } from 'workbox-strategies'
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
+import { registerRoute, NavigationRoute } from 'workbox-routing'
+import { NetworkFirst, CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
+import { CacheableResponsePlugin } from 'workbox-cacheable-response'
+
+// ─── Activate immediately on update ───
+self.addEventListener('install', () => self.skipWaiting())
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
 
 // ─── Workbox Precaching ───
-// __WB_MANIFEST is injected by vite-plugin-pwa in injectManifest mode
+cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
 
+// ─── Offline Navigation Fallback ───
+// SPA: serve index.html for all navigation requests; if offline and not cached, show offline.html
+const navigationHandler = async (params) => {
+  try {
+    return await new NetworkFirst({
+      cacheName: 'navigations',
+      plugins: [new CacheableResponsePlugin({ statuses: [200] })],
+    }).handle(params)
+  } catch (e) {
+    return caches.match('/offline.html') || Response.error()
+  }
+}
+registerRoute(new NavigationRoute(navigationHandler))
+
 // ─── Runtime Caching ───
-// Quran API — network first, cache for 30 days
+// Quran API — stale-while-revalidate for fast offline reads + background refresh
 registerRoute(
   ({ url }) => url.origin === 'https://api.alquran.cloud',
-  new NetworkFirst({
+  new StaleWhileRevalidate({
     cacheName: 'quran-api-cache',
-    plugins: [new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 })],
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [200] }),
+      new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+    ],
   })
 )
 
@@ -22,16 +46,22 @@ registerRoute(
   ({ url }) => url.origin === 'https://api.aladhan.com',
   new NetworkFirst({
     cacheName: 'prayer-api-cache',
-    plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 })],
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [200] }),
+      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }),
+    ],
   })
 )
 
-// Font CDN — network first, cache for 30 days
+// Font CDN — cache first (fonts don't change)
 registerRoute(
   ({ url }) => url.origin === 'https://fonts.cdnfonts.com',
-  new NetworkFirst({
+  new CacheFirst({
     cacheName: 'font-cache',
-    plugins: [new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 })],
+    plugins: [
+      new CacheableResponsePlugin({ statuses: [200] }),
+      new ExpirationPlugin({ maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 90 }),
+    ],
   })
 )
 
