@@ -4,13 +4,16 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  server: { 
-    allowedHosts: ['localhost', 'f8c3-2001-e68-541b-dc82-60ce-a12e-99f1-a096.ngrok-free.app']
+  server: {
+    allowedHosts: ['localhost', '1029-2001-e68-541b-dc82-60ce-a12e-99f1-a096.ngrok-free.app']
   },
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'offline.html'],
       manifest: {
@@ -40,26 +43,12 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api\.alquran\.cloud\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'quran-api-cache',
-              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/api\.aladhan\.com\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'prayer-api-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 },
-            },
-          },
-        ],
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module',
       },
     }),
   ],

@@ -2,10 +2,11 @@ import { MALAYSIA_STATES } from '../data/malaysiaStates'
 import { useFontSize } from '../hooks/useFontSize'
 import FontSizeSlider from '../components/FontSizeSlider'
 
-export default function SettingsPage({ prayerData, ramadhanDay }) {
+export default function SettingsPage({ prayerData, ramadhanDay, notifications }) {
   const { selectedState, locationSource, changeState, retryGPS, loading } = prayerData
   const { day, isManual, setManualDay, resetToAuto } = ramadhanDay
   const { fontSize, setFontSize, MIN_SIZE, MAX_SIZE } = useFontSize()
+  const { permission, enabled, supported, iosWarning, isStandalone: isPWA, toggle: toggleNotif } = notifications
 
   return (
     <div className="space-y-6">
@@ -130,12 +131,67 @@ export default function SettingsPage({ prayerData, ramadhanDay }) {
 
         {/* Notifications */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
-          <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-2">
-            Notifications
-          </label>
-          <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-            Notification permissions & scheduling coming in Phase 5.
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-black-forest dark:text-cornsilk">
+              Prayer Reminders
+            </label>
+            {supported && permission !== 'denied' && (
+              <button
+                onClick={toggleNotif}
+                className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
+                  enabled ? 'bg-olive-leaf' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+              >
+                <span
+                  className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"
+                  style={{ transform: enabled ? 'translateX(24px)' : 'translateX(0)' }}
+                />
+              </button>
+            )}
+          </div>
+
+          {/* Status */}
+          {!supported && (
+            <p className="text-xs text-red-500">
+              Notifications are not supported in this browser.
+            </p>
+          )}
+
+          {supported && permission === 'denied' && (
+            <p className="text-xs text-red-500">
+              Notification permission was denied. Please enable it in your browser settings.
+            </p>
+          )}
+
+          {supported && permission !== 'denied' && (
+            <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
+              {enabled
+                ? 'You will receive reminders at each prayer time with your Juz reading segment.'
+                : 'Enable to get reminders at each prayer time to continue your Quran reading.'}
+            </p>
+          )}
+
+          {/* iOS Warning */}
+          {iosWarning && (
+            <div className="mt-3 bg-sunlit-clay/10 dark:bg-sunlit-clay/5 rounded-xl p-3 border border-sunlit-clay/20">
+              <p className="text-xs font-medium text-copperwood mb-1">
+                iPhone / iPad Notice
+              </p>
+              <p className="text-[11px] text-copperwood/80 leading-relaxed">
+                {isPWA ? (
+                  <>
+                    Notifications work when the app is open. iOS may pause background checks
+                    when the app is minimized. For best results, keep the app open during prayer times.
+                  </>
+                ) : (
+                  <>
+                    For notifications to work on iOS, you must <strong>install this app to your Home Screen</strong> first.
+                    Tap the Share button, then "Add to Home Screen". Notifications only work in installed PWAs on iOS 16.4+.
+                  </>
+                )}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

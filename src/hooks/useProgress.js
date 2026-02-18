@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { getFromStore, putInStore, getAllFromStore } from '../db/db'
+import { getFromStore, putInStore, getAllFromStore, getDB } from '../db/db'
 
 // Progress record shape: { day: number, prayer: string, completedAt: number }
 // Composite key: [day, prayer]
@@ -40,8 +40,6 @@ export function useProgress() {
     // Persist
     const existing = await getFromStore('progress', [day, prayer])
     if (existing) {
-      // Delete by overwriting with a marker, then actually delete
-      const { getDB } = await import('../db/db')
       const db = await getDB()
       await db.delete('progress', [day, prayer])
     } else {
