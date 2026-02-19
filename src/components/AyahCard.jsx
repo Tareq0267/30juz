@@ -1,3 +1,5 @@
+import { T } from '../i18n/translations'
+
 export default function AyahCard({
   ayah,
   fontSize,
@@ -6,7 +8,9 @@ export default function AyahCard({
   showSurahHeader,
   showEnglish = true,
   showMalay = true,
+  language = 'ms',
 }) {
+  const t = T[language] ?? T.ms
   return (
     <>
       {showSurahHeader && (
@@ -33,7 +37,7 @@ export default function AyahCard({
             {ayah.numberInSurah}
           </span>
           {isHighlighted && (
-            <span className="text-xs text-sunlit-clay font-medium">Highlighted</span>
+            <span className="text-xs text-sunlit-clay font-medium">{t.highlighted}</span>
           )}
         </div>
 

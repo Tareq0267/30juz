@@ -46,11 +46,11 @@ export const PRAYER_DISPLAY = {
 
 // Prayer-to-segment mapping (deterministic)
 export const PRAYER_SEGMENTS = [
-  { index: 0, prayer: 'Fajr',    label: 'Subuh — Segment 1' },
-  { index: 1, prayer: 'Dhuhr',   label: 'Zohor — Segment 2' },
-  { index: 2, prayer: 'Asr',     label: 'Asar — Segment 3' },
-  { index: 3, prayer: 'Maghrib', label: 'Maghrib — Segment 4' },
-  { index: 4, prayer: 'Isha',    label: 'Isyak — Segment 5' },
+  { index: 0, prayer: 'Fajr',    label: 'Subuh — Bahagian 1' },
+  { index: 1, prayer: 'Dhuhr',   label: 'Zohor — Bahagian 2' },
+  { index: 2, prayer: 'Asr',     label: 'Asar — Bahagian 3' },
+  { index: 3, prayer: 'Maghrib', label: 'Maghrib — Bahagian 4' },
+  { index: 4, prayer: 'Isha',    label: 'Isyak — Bahagian 5' },
 ]
 
 // Ramadhan day = Juz number. Day 1 → Juz 1, Day 30 → Juz 30.

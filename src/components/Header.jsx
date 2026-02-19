@@ -1,15 +1,17 @@
 import { Link, useLocation } from 'react-router-dom'
 import DarkModeToggle from './DarkModeToggle'
+import { T } from '../i18n/translations'
 
-const navItems = [
-  { path: '/', label: 'Home', icon: '🏠' },
-  { path: '/reader', label: 'Read', icon: '📖' },
-  { path: '/progress', label: 'Progress', icon: '📊' },
-  { path: '/settings', label: 'Settings', icon: '⚙️' },
-]
-
-export default function Header({ dark, onToggleDark }) {
+export default function Header({ dark, onToggleDark, language }) {
   const location = useLocation()
+  const t = T[language] ?? T.ms
+
+  const navItems = [
+    { path: '/', label: t.navHome, icon: '🏠' },
+    { path: '/reader', label: t.navRead, icon: '📖' },
+    { path: '/progress', label: t.navProgress, icon: '📊' },
+    { path: '/settings', label: t.navSettings, icon: '⚙️' },
+  ]
 
   return (
     <header className="sticky top-0 z-50 bg-black-forest/95 dark:bg-gray-800/95 backdrop-blur-sm text-cornsilk shadow-lg">
@@ -17,7 +19,7 @@ export default function Header({ dark, onToggleDark }) {
         <Link to="/" className="text-lg font-bold tracking-wide">
           Ramadhan <span className="text-sunlit-clay">30 Juz</span>
         </Link>
-        <DarkModeToggle dark={dark} onToggle={onToggleDark} />
+        <DarkModeToggle dark={dark} onToggle={onToggleDark} language={language} />
       </div>
 
       <nav className="max-w-2xl mx-auto px-4 pb-2 flex gap-1">

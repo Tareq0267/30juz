@@ -9,8 +9,10 @@ import FontSizeSlider from '../components/FontSizeSlider'
 import SegmentTabs from '../components/SegmentTabs'
 import LoadingSkeleton from '../components/LoadingSkeleton'
 import { PRAYER_SEGMENTS } from '../data/juzSplit'
+import { T } from '../i18n/translations'
 
-export default function ReaderPage({ progress, ramadhanDay }) {
+export default function ReaderPage({ progress, ramadhanDay, language }) {
+  const t = T[language] ?? T.ms
   const { markSegmentComplete, isSegmentComplete } = progress
   const { juz } = useParams()
   const [searchParams] = useSearchParams()
@@ -60,13 +62,13 @@ export default function ReaderPage({ progress, ramadhanDay }) {
             onClick={() => navigate(`/reader/${todayJuz}?segment=1`)}
             className="bg-olive-leaf text-cornsilk px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-olive-leaf/90 transition-colors w-full"
           >
-            Continue Today's Juz — Juz {todayJuz}
+            {t.continueToday(todayJuz)}
           </button>
         </div>
 
         <div>
           <h2 className="text-sm font-semibold text-black-forest dark:text-cornsilk mb-3">
-            All 30 Juz
+            {t.allJuz}
           </h2>
           <div className="grid grid-cols-5 gap-2">
             {Array.from({ length: 30 }, (_, i) => {
@@ -104,7 +106,7 @@ export default function ReaderPage({ progress, ramadhanDay }) {
             })}
           </div>
           <p className="text-[10px] text-black-forest/40 dark:text-cornsilk/40 mt-2 text-center">
-            Dots = segments completed · ✓ = all 5 segments done
+            {t.gridLegend}
           </p>
         </div>
       </div>
@@ -121,7 +123,7 @@ export default function ReaderPage({ progress, ramadhanDay }) {
           </h1>
           {currentAyahs.length > 0 && (
             <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-              {currentAyahs.length} ayat in this segment
+              {t.ayatInSegment(currentAyahs.length)}
             </p>
           )}
         </div>
@@ -203,7 +205,7 @@ export default function ReaderPage({ progress, ramadhanDay }) {
             onClick={reload}
             className="text-xs text-red-500 underline hover:no-underline"
           >
-            Try again
+            {t.tryAgain}
           </button>
         </div>
       )}
@@ -224,6 +226,7 @@ export default function ReaderPage({ progress, ramadhanDay }) {
               showSurahHeader={shouldShowSurahHeader(ayah, i)}
               showEnglish={showEnglish}
               showMalay={showMalay}
+              language={language}
             />
           ))}
 
@@ -245,7 +248,7 @@ export default function ReaderPage({ progress, ramadhanDay }) {
                         : 'bg-olive-leaf text-cornsilk hover:bg-olive-leaf/90'
                     }`}
                   >
-                    {done ? '✓ Segment Complete' : 'Mark as Complete'}
+                    {done ? t.segmentComplete : t.markComplete}
                   </button>
                 )}
 
@@ -256,18 +259,18 @@ export default function ReaderPage({ progress, ramadhanDay }) {
                       onClick={() => setActiveSegment((s) => s + 1)}
                       className="flex-1 bg-sunlit-clay/15 dark:bg-sunlit-clay/10 text-copperwood py-3 rounded-2xl font-medium text-sm hover:bg-sunlit-clay/25 transition-colors"
                     >
-                      Next Segment →
+                      {t.nextSegment}
                     </button>
                   ) : juzNumber < 30 ? (
                     <button
                       onClick={() => navigate(`/reader/${juzNumber + 1}?segment=1`)}
                       className="flex-1 bg-sunlit-clay text-black-forest py-3 rounded-2xl font-medium text-sm hover:bg-sunlit-clay/90 transition-colors shadow-sm"
                     >
-                      Next Juz →
+                      {t.nextJuz}
                     </button>
                   ) : (
                     <div className="flex-1 bg-olive-leaf/10 dark:bg-olive-leaf/20 text-olive-leaf py-3 rounded-2xl font-medium text-sm text-center">
-                      End of Quran — Alhamdulillah
+                      {t.khatam}
                     </div>
                   )}
                 </div>

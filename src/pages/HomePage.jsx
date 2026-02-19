@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { getTimeUntil } from '../services/prayerService'
 import { getJuzForDay, PRAYER_DISPLAY } from '../data/juzSplit'
+import { T } from '../i18n/translations'
 
 const PRAYER_ICONS = {
   Fajr: '🌅',
@@ -10,7 +11,8 @@ const PRAYER_ICONS = {
   Isha: '🌙',
 }
 
-export default function HomePage({ prayerData, ramadhanDay, progress }) {
+export default function HomePage({ prayerData, ramadhanDay, progress, language }) {
+  const t = T[language] ?? T.ms
   const { prayers, currentPrayer, loading, error, PRAYER_KEYS, locationSource, selectedState } =
     prayerData
   const { day } = ramadhanDay
@@ -22,9 +24,9 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
     <div className="space-y-6">
       {/* Welcome Card */}
       <div className="bg-black-forest dark:bg-gray-800 text-cornsilk rounded-2xl p-6 shadow-lg">
-        <h1 className="text-2xl font-bold mb-1">Ramadhan Mubarak</h1>
+        <h1 className="text-2xl font-bold mb-1">{t.welcomeTitle}</h1>
         <p className="text-cornsilk/70 text-sm">
-          Day {day} of 30 — Juz {day}
+          {t.dayOfThirty(day)}
         </p>
         <p className="text-cornsilk/50 text-xs mt-0.5">{juzInfo.label}</p>
         <div className="mt-4 w-full bg-cornsilk/20 rounded-full h-2">
@@ -34,7 +36,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
           />
         </div>
         <p className="text-xs text-cornsilk/50 mt-1">
-          {daysFullyCompleted}/30 Juz completed · {dayProgress}/5 today
+          {t.juzComplete(daysFullyCompleted, dayProgress)}
         </p>
       </div>
 
@@ -42,14 +44,14 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
       <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-black-forest dark:text-cornsilk">
-            Solat Time
+            {t.prayerTimes}
           </h2>
           <span className="text-xs text-black-forest/40 dark:text-cornsilk/40">
             {locationSource === 'gps'
               ? 'GPS'
               : selectedState
                 ? selectedState.name
-                : 'Loading...'}
+                : t.loading}
           </span>
         </div>
 
@@ -99,7 +101,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
                   </span>
                   {timeUntil && (
                     <span className="block text-[9px] text-sunlit-clay font-medium mt-0.5">
-                      in {timeUntil}
+                      {t.inTime(timeUntil)}
                     </span>
                   )}
                 </div>
@@ -112,7 +114,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
       {/* Today's Segments */}
       <div>
         <h2 className="text-lg font-semibold text-black-forest dark:text-cornsilk mb-3">
-          Today's Reading
+          {t.todaysReading}
         </h2>
         <div className="space-y-2">
           {PRAYER_KEYS.map((prayer, i) => {
@@ -147,23 +149,23 @@ export default function HomePage({ prayerData, ramadhanDay, progress }) {
                       {PRAYER_DISPLAY[prayer]}
                       {isCurrent && !done && (
                         <span className="ml-2 text-xs text-sunlit-clay font-normal">
-                          Now
+                          {t.now}
                         </span>
                       )}
                       {done && (
                         <span className="ml-2 text-xs text-olive-leaf dark:text-olive-leaf/80 font-normal">
-                          Done
+                          {t.done}
                         </span>
                       )}
                     </p>
                     <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-                      Segment {i + 1} of Juz {day}
+                      {t.segmentOf(i + 1, day)}
                       {prayers ? ` · ${prayers[prayer]}` : ''}
                     </p>
                   </div>
                 </div>
                 <span className={`text-sm ${done ? 'text-olive-leaf' : 'text-copperwood'}`}>
-                  {done ? 'Review →' : 'Start →'}
+                  {done ? t.repeat : t.start}
                 </span>
               </Link>
             )

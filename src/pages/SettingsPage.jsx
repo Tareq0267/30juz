@@ -1,8 +1,10 @@
 import { MALAYSIA_STATES } from '../data/malaysiaStates'
 import { useFontSize } from '../hooks/useFontSize'
 import FontSizeSlider from '../components/FontSizeSlider'
+import { T } from '../i18n/translations'
 
-export default function SettingsPage({ prayerData, ramadhanDay, notifications }) {
+export default function SettingsPage({ prayerData, ramadhanDay, notifications, language, setLanguage }) {
+  const t = T[language] ?? T.ms
   const { selectedState, locationSource, changeState, retryGPS, loading } = prayerData
   const { day, isManual, setManualDay, resetToAuto } = ramadhanDay
   const { fontSize, setFontSize, MIN_SIZE, MAX_SIZE } = useFontSize()
@@ -10,18 +12,48 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-black-forest dark:text-cornsilk">Settings</h1>
+      <h1 className="text-xl font-bold text-black-forest dark:text-cornsilk">{t.settings}</h1>
 
       <div className="space-y-3">
+        {/* Language Selector */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
+          <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-1">
+            {t.language}
+          </label>
+          <p className="text-xs text-black-forest/50 dark:text-cornsilk/50 mb-3">
+            {t.langDesc}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setLanguage('ms')}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all border ${
+                language === 'ms'
+                  ? 'bg-olive-leaf text-cornsilk border-olive-leaf'
+                  : 'bg-cornsilk dark:bg-gray-700 border-olive-leaf/10 dark:border-gray-600 text-black-forest/60 dark:text-cornsilk/60 hover:border-olive-leaf/30'
+              }`}
+            >
+              🇲🇾 Bahasa Melayu
+            </button>
+            <button
+              onClick={() => setLanguage('en')}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all border ${
+                language === 'en'
+                  ? 'bg-olive-leaf text-cornsilk border-olive-leaf'
+                  : 'bg-cornsilk dark:bg-gray-700 border-olive-leaf/10 dark:border-gray-600 text-black-forest/60 dark:text-cornsilk/60 hover:border-olive-leaf/30'
+              }`}
+            >
+              🇬🇧 English
+            </button>
+          </div>
+        </div>
+
         {/* Ramadhan Day Selector */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
           <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-1">
-            Ramadhan Day
+            {t.ramadhanDay}
           </label>
           <p className="text-xs text-black-forest/50 dark:text-cornsilk/50 mb-3">
-            {isManual
-              ? `Manually set to Day ${day}`
-              : `Auto-calculated: Day ${day} (from 19 Feb 2026)`}
+            {isManual ? t.manualDay(day) : t.autoDay(day)}
           </p>
 
           <div className="flex items-center gap-3">
@@ -67,7 +99,7 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
               onClick={resetToAuto}
               className="mt-2 w-full text-xs text-olive-leaf dark:text-sunlit-clay py-2 rounded-xl hover:bg-olive-leaf/5 dark:hover:bg-sunlit-clay/10 transition-colors"
             >
-              Reset to auto-detect
+              {t.resetAuto}
             </button>
           )}
         </div>
@@ -75,14 +107,14 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
         {/* Location */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
           <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-1">
-            Location
+            {t.location}
           </label>
           <p className="text-xs text-black-forest/50 dark:text-cornsilk/50 mb-3">
             {locationSource === 'gps'
-              ? 'Using your GPS location'
+              ? t.usingGPS
               : selectedState
-                ? `Using ${selectedState.name} prayer times`
-                : 'Detecting location...'}
+                ? t.usingState(selectedState.name)
+                : t.detectingLocation}
           </p>
 
           <select
@@ -92,7 +124,7 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
             className="w-full rounded-xl border border-olive-leaf/20 dark:border-gray-600 bg-cornsilk dark:bg-gray-700 text-black-forest dark:text-cornsilk px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sunlit-clay/50 transition-colors"
           >
             <option value="" disabled>
-              Select your state
+              {t.selectState}
             </option>
             {MALAYSIA_STATES.map((state) => (
               <option key={state.code} value={state.code}>
@@ -106,17 +138,17 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
             disabled={loading}
             className="mt-2 w-full text-xs text-olive-leaf dark:text-sunlit-clay py-2 rounded-xl hover:bg-olive-leaf/5 dark:hover:bg-sunlit-clay/10 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Detecting...' : 'Use GPS instead'}
+            {loading ? t.detecting : t.useGPS}
           </button>
         </div>
 
         {/* Font Size */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
           <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-2">
-            Arabic Font Size
+            {t.arabicFontSize}
           </label>
           <p className="text-xs text-black-forest/50 dark:text-cornsilk/50 mb-3">
-            Adjust the size of Arabic Uthmani script in the reader.
+            {t.fontSizeDesc}
           </p>
           <FontSizeSlider
             fontSize={fontSize}
@@ -133,7 +165,7 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-olive-leaf/10 dark:border-gray-700">
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-black-forest dark:text-cornsilk">
-              Prayer Reminders
+              {t.prayerReminders}
             </label>
             {supported && permission !== 'denied' && (
               <button
@@ -153,21 +185,19 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
           {/* Status */}
           {!supported && (
             <p className="text-xs text-red-500">
-              Notifications are not supported in this browser.
+              {t.notifNotSupported}
             </p>
           )}
 
           {supported && permission === 'denied' && (
             <p className="text-xs text-red-500">
-              Notification permission was denied. Please enable it in your browser settings.
+              {t.notifDenied}
             </p>
           )}
 
           {supported && permission !== 'denied' && (
             <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-              {enabled
-                ? 'You will receive reminders at each prayer time with your Juz reading segment.'
-                : 'Enable to get reminders at each prayer time to continue your Quran reading.'}
+              {enabled ? t.notifEnabled : t.notifDisabled}
             </p>
           )}
 
@@ -175,19 +205,11 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications })
           {iosWarning && (
             <div className="mt-3 bg-sunlit-clay/10 dark:bg-sunlit-clay/5 rounded-xl p-3 border border-sunlit-clay/20">
               <p className="text-xs font-medium text-copperwood mb-1">
-                iPhone / iPad Notice
+                {t.iosNotice}
               </p>
               <p className="text-[11px] text-copperwood/80 leading-relaxed">
-                {isPWA ? (
-                  <>
-                    Notifications work when the app is open. iOS may pause background checks
-                    when the app is minimized. For best results, keep the app open during prayer times.
-                  </>
-                ) : (
-                  <>
-                    For notifications to work on iOS, you must <strong>install this app to your Home Screen</strong> first.
-                    Tap the Share button, then "Add to Home Screen". Notifications only work in installed PWAs on iOS 16.4+.
-                  </>
+                {isPWA ? t.iosPWA : (
+                  <>{t.iosInstall} <strong>{t.iosInstallBold}</strong> {t.iosInstallAfter}</>
                 )}
               </p>
             </div>

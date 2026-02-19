@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { JUZ_DATA, PRAYER_SEGMENTS } from '../data/juzSplit'
+import { JUZ_DATA, PRAYER_SEGMENTS, PRAYER_DISPLAY } from '../data/juzSplit'
+import { T } from '../i18n/translations'
 
-export default function ProgressPage({ ramadhanDay, progress }) {
+export default function ProgressPage({ ramadhanDay, progress, language }) {
+  const t = T[language] ?? T.ms
   const { day } = ramadhanDay
   const { getDayProgress, isSegmentComplete, toggleSegment, totalCompleted, daysFullyCompleted } =
     progress
@@ -11,12 +13,12 @@ export default function ProgressPage({ ramadhanDay, progress }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-black-forest dark:text-cornsilk">Your Progress</h1>
+        <h1 className="text-xl font-bold text-black-forest dark:text-cornsilk">{t.yourProgress}</h1>
         <div className="text-right">
           <p className="text-sm font-medium text-black-forest dark:text-cornsilk">
             {totalCompleted}/150
           </p>
-          <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">segments done</p>
+          <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">{t.segmentsDone}</p>
         </div>
       </div>
 
@@ -24,17 +26,17 @@ export default function ProgressPage({ ramadhanDay, progress }) {
       <div className="flex gap-2">
         <div className="flex-1 bg-olive-leaf/10 dark:bg-olive-leaf/20 rounded-2xl p-3 text-center">
           <p className="text-2xl font-bold text-olive-leaf">{daysFullyCompleted}</p>
-          <p className="text-[10px] text-olive-leaf/70">Days Complete</p>
+          <p className="text-[10px] text-olive-leaf/70">{t.daysComplete}</p>
         </div>
         <div className="flex-1 bg-sunlit-clay/10 dark:bg-sunlit-clay/10 rounded-2xl p-3 text-center">
           <p className="text-2xl font-bold text-sunlit-clay">{totalCompleted}</p>
-          <p className="text-[10px] text-sunlit-clay/70">Segments Read</p>
+          <p className="text-[10px] text-sunlit-clay/70">{t.segmentsRead}</p>
         </div>
         <div className="flex-1 bg-copperwood/10 dark:bg-copperwood/10 rounded-2xl p-3 text-center">
           <p className="text-2xl font-bold text-copperwood">
             {Math.round((totalCompleted / 150) * 100)}%
           </p>
-          <p className="text-[10px] text-copperwood/70">Overall</p>
+          <p className="text-[10px] text-copperwood/70">{t.overall}</p>
         </div>
       </div>
 
@@ -79,7 +81,7 @@ export default function ProgressPage({ ramadhanDay, progress }) {
           <div className="flex items-center justify-between mb-3">
             <div>
               <h3 className="text-sm font-bold text-black-forest dark:text-cornsilk">
-                Day {selectedDay} — Juz {selectedDay}
+                {t.dayJuz(selectedDay)}
               </h3>
               <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
                 {JUZ_DATA[selectedDay - 1].label}
@@ -89,7 +91,7 @@ export default function ProgressPage({ ramadhanDay, progress }) {
               to={`/reader/${selectedDay}?segment=1`}
               className="text-xs text-copperwood hover:underline"
             >
-              Open Reader →
+              {t.openReader}
             </Link>
           </div>
 
@@ -106,7 +108,7 @@ export default function ProgressPage({ ramadhanDay, progress }) {
                       : 'bg-cornsilk dark:bg-gray-700 text-black-forest/60 dark:text-cornsilk/60'
                   }`}
                 >
-                  <span>{seg.label}</span>
+                  <span>{t.segmentLabel(PRAYER_DISPLAY[seg.prayer], seg.index + 1)}</span>
                   <span className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${
                     done
                       ? 'bg-olive-leaf text-cornsilk'
@@ -126,7 +128,7 @@ export default function ProgressPage({ ramadhanDay, progress }) {
         <div className="bg-olive-leaf text-cornsilk rounded-2xl p-6 text-center shadow-lg">
           <p className="text-2xl mb-1">Alhamdulillah!</p>
           <p className="text-sm text-cornsilk/80">
-            You have completed the entire Quran this Ramadhan.
+            {t.khatamMessage}
           </p>
         </div>
       )}
