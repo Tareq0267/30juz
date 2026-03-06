@@ -78,6 +78,16 @@ export function useProgress() {
     setKhatamCount(newCount)
   }, [khatamCount])
 
+  const wipeProgress = useCallback(async () => {
+    const db = await getDB()
+    await db.clear('progress')
+    setCompletedSegments(new Map())
+    localStorage.removeItem('khatamCount')
+    localStorage.removeItem('khatamModalDismissedFor')
+    setKhatamCount(0)
+    setModalDismissedFor(-1)
+  }, [])
+
   const dismissKhatamModal = useCallback(() => {
     localStorage.setItem('khatamModalDismissedFor', String(khatamCount))
     setModalDismissedFor(khatamCount)
@@ -119,6 +129,7 @@ export function useProgress() {
     khatamCount,
     showKhatamModal,
     resetProgress,
+    wipeProgress,
     dismissKhatamModal,
     recommendedDay,
   }

@@ -1,10 +1,28 @@
+import { useState, useEffect } from 'react'
 import { MALAYSIA_STATES } from '../data/malaysiaStates'
 import { useFontSize } from '../hooks/useFontSize'
 import FontSizeSlider from '../components/FontSizeSlider'
 import { T } from '../i18n/translations'
 
-export default function SettingsPage({ prayerData, ramadhanDay, notifications, language, setLanguage }) {
+export default function SettingsPage({ prayerData, ramadhanDay, notifications, language, setLanguage, progress }) {
   const t = T[language] ?? T.ms
+  const { wipeProgress } = progress
+  const [confirmReset, setConfirmReset] = useState(false)
+
+  useEffect(() => {
+    if (!confirmReset) return
+    const id = setTimeout(() => setConfirmReset(false), 3000)
+    return () => clearTimeout(id)
+  }, [confirmReset])
+
+  function handleResetClick() {
+    if (confirmReset) {
+      wipeProgress()
+      setConfirmReset(false)
+    } else {
+      setConfirmReset(true)
+    }
+  }
   const { selectedState, locationSource, changeState, retryGPS, loading } = prayerData
   const { day, isManual, setManualDay, resetToAuto } = ramadhanDay
   const { fontSize, setFontSize, MIN_SIZE, MAX_SIZE } = useFontSize()
@@ -215,6 +233,26 @@ export default function SettingsPage({ prayerData, ramadhanDay, notifications, l
             </div>
           )}
         </div>
+        {/* Reset Progress */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-red-200/50 dark:border-red-900/30">
+          <label className="block text-sm font-medium text-black-forest dark:text-cornsilk mb-1">
+            {t.resetAllProgress}
+          </label>
+          <p className="text-xs text-black-forest/50 dark:text-cornsilk/50 mb-3">
+            {t.resetAllProgressDesc}
+          </p>
+          <button
+            onClick={handleResetClick}
+            className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+              confirmReset
+                ? 'bg-red-500 text-white active:scale-95'
+                : 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 border border-red-200 dark:border-red-800/40 hover:bg-red-100 dark:hover:bg-red-900/30'
+            }`}
+          >
+            {confirmReset ? t.resetAllConfirm : t.resetAllBtn}
+          </button>
+        </div>
+
       </div>
     </div>
   )

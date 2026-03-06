@@ -31,7 +31,7 @@ export default function App() {
         <Route path="/reader" element={<ReaderPage progress={progress} ramadhanDay={ramadhanDay} language={language} />} />
         <Route path="/reader/:juz" element={<ReaderPage progress={progress} ramadhanDay={ramadhanDay} language={language} />} />
         <Route path="/progress" element={<ProgressPage ramadhanDay={ramadhanDay} progress={progress} language={language} />} />
-        <Route path="/settings" element={<SettingsPage prayerData={prayerData} ramadhanDay={ramadhanDay} notifications={notifications} language={language} setLanguage={setLanguage} />} />
+        <Route path="/settings" element={<SettingsPage prayerData={prayerData} ramadhanDay={ramadhanDay} notifications={notifications} language={language} setLanguage={setLanguage} progress={progress} />} />
       </Routes>
       {installPrompt.canInstall && (
         <InstallBanner onInstall={installPrompt.install} onDismiss={installPrompt.dismiss} language={language} />

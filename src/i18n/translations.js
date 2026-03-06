@@ -88,6 +88,12 @@ export const T = {
     language: 'Bahasa',
     langDesc: 'Pilih bahasa antara muka aplikasi.',
 
+    // SettingsPage - Reset
+    resetAllProgress: 'Tetapkan Semula Kemajuan',
+    resetAllProgressDesc: 'Padam semua rekod bacaan dan khatam. Tindakan ini tidak boleh dibatalkan.',
+    resetAllBtn: 'Tetapkan Semula Semua',
+    resetAllConfirm: 'Tekan sekali lagi untuk sahkan',
+
     // InstallBanner
     installTitle: 'Pasang Ramadhan 30 Juz',
     installDesc: 'Tambah ke skrin utama untuk akses pantas & bacaan luar talian',
@@ -186,6 +192,12 @@ export const T = {
     iosInstallAfter: 'first. Tap the Share button, then "Add to Home Screen". Notifications only work in installed PWAs on iOS 16.4+.',
     language: 'Language',
     langDesc: 'Choose the app interface language.',
+
+    // SettingsPage - Reset
+    resetAllProgress: 'Reset Progress',
+    resetAllProgressDesc: 'Delete all reading records and khatam history. This cannot be undone.',
+    resetAllBtn: 'Reset Everything',
+    resetAllConfirm: 'Tap again to confirm',
 
     // InstallBanner
     installTitle: 'Install Ramadhan 30 Juz',
