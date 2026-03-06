@@ -54,6 +54,11 @@ export const T = {
     dayJuz: (d) => `Hari ${d} — Juz ${d}`,
     openReader: 'Buka Bacaan →',
     khatamMessage: 'Anda telah mengkhatam seluruh Al-Quran Ramadhan ini.',
+    khatamNumber: (n) => `Khatam Ke-${n}`,
+    khatamTimes: (n) => `${n}× Khatam sebelum ini`,
+    startAgain: 'Mulakan Semula',
+    closeModal: 'Tutup',
+    khatamModalMessage: 'Semoga Allah menerima amalan ibadah anda. Anda boleh mulakan semula pembacaan anda.',
 
     // SettingsPage
     settings: 'Tetapan',
@@ -148,6 +153,11 @@ export const T = {
     dayJuz: (d) => `Day ${d} — Juz ${d}`,
     openReader: 'Open Reader →',
     khatamMessage: 'You have completed the entire Quran this Ramadhan.',
+    khatamNumber: (n) => `Khatam #${n}`,
+    khatamTimes: (n) => `${n}× completed before`,
+    startAgain: 'Start Again',
+    closeModal: 'Close',
+    khatamModalMessage: 'May Allah accept your worship. You can begin your reading again.',
 
     // SettingsPage
     settings: 'Settings',

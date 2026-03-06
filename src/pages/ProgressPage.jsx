@@ -2,18 +2,35 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { JUZ_DATA, PRAYER_SEGMENTS, PRAYER_DISPLAY } from '../data/juzSplit'
 import { T } from '../i18n/translations'
+import KhatamModal from '../components/KhatamModal'
 
 export default function ProgressPage({ ramadhanDay, progress, language }) {
   const t = T[language] ?? T.ms
   const { day } = ramadhanDay
-  const { getDayProgress, isSegmentComplete, toggleSegment, totalCompleted, daysFullyCompleted } =
-    progress
+  const {
+    getDayProgress,
+    isSegmentComplete,
+    toggleSegment,
+    totalCompleted,
+    daysFullyCompleted,
+    khatamCount,
+    showKhatamModal,
+    resetProgress,
+    dismissKhatamModal,
+  } = progress
   const [selectedDay, setSelectedDay] = useState(null)
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-black-forest dark:text-cornsilk">{t.yourProgress}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold text-black-forest dark:text-cornsilk">{t.yourProgress}</h1>
+          {khatamCount > 0 && (
+            <span className="bg-olive-leaf/10 dark:bg-olive-leaf/20 text-olive-leaf text-xs font-semibold rounded-full px-2.5 py-0.5">
+              ☽ {t.khatamNumber(khatamCount)}
+            </span>
+          )}
+        </div>
         <div className="text-right">
           <p className="text-sm font-medium text-black-forest dark:text-cornsilk">
             {totalCompleted}/150
@@ -123,14 +140,31 @@ export default function ProgressPage({ ramadhanDay, progress, language }) {
         </div>
       )}
 
-      {/* Completion message */}
+      {/* Completion banner (shown after modal is dismissed) */}
       {daysFullyCompleted === 30 && (
-        <div className="bg-olive-leaf text-cornsilk rounded-2xl p-6 text-center shadow-lg">
-          <p className="text-2xl mb-1">Alhamdulillah!</p>
-          <p className="text-sm text-cornsilk/80">
-            {t.khatamMessage}
-          </p>
+        <div className="bg-olive-leaf text-cornsilk rounded-2xl p-6 text-center shadow-lg space-y-3">
+          <p className="text-2xl">Alhamdulillah!</p>
+          <p className="text-sm text-cornsilk/80">{t.khatamMessage}</p>
+          {khatamCount > 0 && (
+            <p className="text-xs text-cornsilk/60">{t.khatamTimes(khatamCount)}</p>
+          )}
+          <button
+            onClick={resetProgress}
+            className="mt-1 bg-cornsilk text-olive-leaf px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-cornsilk/90 active:scale-95 transition-all"
+          >
+            {t.startAgain}
+          </button>
         </div>
+      )}
+
+      {/* Khatam celebration modal */}
+      {showKhatamModal && (
+        <KhatamModal
+          khatamCount={khatamCount}
+          onReset={resetProgress}
+          onDismiss={dismissKhatamModal}
+          language={language}
+        />
       )}
     </div>
   )

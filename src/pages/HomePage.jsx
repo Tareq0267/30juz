@@ -16,17 +16,25 @@ export default function HomePage({ prayerData, ramadhanDay, progress, language }
   const { prayers, currentPrayer, loading, error, PRAYER_KEYS, locationSource, selectedState } =
     prayerData
   const { day } = ramadhanDay
-  const { isSegmentComplete, getDayProgress, daysFullyCompleted } = progress
-  const juzInfo = getJuzForDay(day)
-  const dayProgress = getDayProgress(day)
+  const { isSegmentComplete, getDayProgress, daysFullyCompleted, khatamCount, recommendedDay } = progress
+  const effectiveDay = recommendedDay ?? day
+  const juzInfo = getJuzForDay(effectiveDay)
+  const dayProgress = getDayProgress(effectiveDay)
 
   return (
     <div className="space-y-6">
       {/* Welcome Card */}
       <div className="bg-black-forest dark:bg-gray-800 text-cornsilk rounded-2xl p-6 shadow-lg">
-        <h1 className="text-2xl font-bold mb-1">{t.welcomeTitle}</h1>
+        <div className="flex items-start justify-between mb-1">
+          <h1 className="text-2xl font-bold">{t.welcomeTitle}</h1>
+          {khatamCount > 0 && (
+            <span className="bg-sunlit-clay/25 text-sunlit-clay text-xs font-semibold rounded-full px-2.5 py-1 shrink-0 ml-2">
+              ☽ {t.khatamNumber(khatamCount)}
+            </span>
+          )}
+        </div>
         <p className="text-cornsilk/70 text-sm">
-          {t.dayOfThirty(day)}
+          {t.dayOfThirty(effectiveDay)}
         </p>
         <p className="text-cornsilk/50 text-xs mt-0.5">{juzInfo.label}</p>
         <div className="mt-4 w-full bg-cornsilk/20 rounded-full h-2">
@@ -119,11 +127,11 @@ export default function HomePage({ prayerData, ramadhanDay, progress, language }
         <div className="space-y-2">
           {PRAYER_KEYS.map((prayer, i) => {
             const isCurrent = currentPrayer?.current === prayer
-            const done = isSegmentComplete(day, prayer)
+            const done = isSegmentComplete(effectiveDay, prayer)
             return (
               <Link
                 key={prayer}
-                to={`/reader/${day}?segment=${i + 1}`}
+                to={`/reader/${effectiveDay}?segment=${i + 1}`}
                 className={`flex items-center justify-between rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 border ${
                   done
                     ? 'bg-olive-leaf/5 dark:bg-olive-leaf/10 border-olive-leaf/20 dark:border-olive-leaf/30'
@@ -159,7 +167,7 @@ export default function HomePage({ prayerData, ramadhanDay, progress, language }
                       )}
                     </p>
                     <p className="text-xs text-black-forest/50 dark:text-cornsilk/50">
-                      {t.segmentOf(i + 1, day)}
+                      {t.segmentOf(i + 1, effectiveDay)}
                       {prayers ? ` · ${prayers[prayer]}` : ''}
                     </p>
                   </div>

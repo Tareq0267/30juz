@@ -4,9 +4,19 @@ import { getFromStore, putInStore, getAllFromStore, getDB } from '../db/db'
 // Progress record shape: { day: number, prayer: string, completedAt: number }
 // Composite key: [day, prayer]
 
+function getStoredKhatamCount() {
+  return parseInt(localStorage.getItem('khatamCount') || '0', 10)
+}
+
+function getStoredModalDismissedFor() {
+  return parseInt(localStorage.getItem('khatamModalDismissedFor') || '-1', 10)
+}
+
 export function useProgress() {
   const [completedSegments, setCompletedSegments] = useState(new Map())
   const [loaded, setLoaded] = useState(false)
+  const [khatamCount, setKhatamCount] = useState(getStoredKhatamCount)
+  const [modalDismissedFor, setModalDismissedFor] = useState(getStoredModalDismissedFor)
 
   // Load all progress on mount
   useEffect(() => {
@@ -59,6 +69,20 @@ export function useProgress() {
     await putInStore('progress', { day, prayer, completedAt: Date.now() })
   }, [completedSegments])
 
+  const resetProgress = useCallback(async () => {
+    const db = await getDB()
+    await db.clear('progress')
+    setCompletedSegments(new Map())
+    const newCount = khatamCount + 1
+    localStorage.setItem('khatamCount', String(newCount))
+    setKhatamCount(newCount)
+  }, [khatamCount])
+
+  const dismissKhatamModal = useCallback(() => {
+    localStorage.setItem('khatamModalDismissedFor', String(khatamCount))
+    setModalDismissedFor(khatamCount)
+  }, [khatamCount])
+
   // Count completions for a given day (0-5)
   const getDayProgress = useCallback(
     (day) => {
@@ -76,6 +100,14 @@ export function useProgress() {
     (d) => getDayProgress(d) === 5
   ).length
 
+  // Show modal when khatam is reached and not yet dismissed for this count
+  const showKhatamModal = daysFullyCompleted === 30 && khatamCount > modalDismissedFor
+
+  // On a second+ khatam, recommend the first incomplete juz (1→30) instead of calendar day
+  const recommendedDay = khatamCount > 0
+    ? (Array.from({ length: 30 }, (_, i) => i + 1).find((d) => getDayProgress(d) < 5) ?? 30)
+    : null
+
   return {
     isSegmentComplete,
     toggleSegment,
@@ -84,5 +116,10 @@ export function useProgress() {
     totalCompleted,
     daysFullyCompleted,
     loaded,
+    khatamCount,
+    showKhatamModal,
+    resetProgress,
+    dismissKhatamModal,
+    recommendedDay,
   }
 }
